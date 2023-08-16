@@ -12,10 +12,10 @@ const UserSchema = new mongoose.Schema({
     picture:{
         type: String,
     },
-    cases: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "cases",
-    }
+    // cases: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "cases",
+    // }
 },{timestamps: true})
 
 const userModel = mongoose.model("users", UserSchema)

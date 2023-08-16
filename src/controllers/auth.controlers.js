@@ -61,7 +61,22 @@ const loginUser = async (req, res, next)=>{
         console.log(err)
     }
 }
+// -----------------------------------------------------------------------------
+//  @des              delete user
+//  @method           delete
+//  @route            http://localhost:4000/api/v1/users/deleteUser/:id
+// -----------------------------------------------------------------------------
+const deleteUser = async(req, res, next)=>{
+    const {id} = req.params.toString()
+    try{
+        const user = await userModel.findByIdAndDelete(id)
+        res.status(200).json(user)
+    }catch(err){
+        console.log(err)
+    }
+}
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    deleteUser
 }

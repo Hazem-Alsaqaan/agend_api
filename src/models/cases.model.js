@@ -7,7 +7,7 @@ const CaseSchema = new mongoose.Schema({
     plaintiff: {
         type: String
     },
-    defedant: {
+    defendant: {
         type: String
     },
     typeCase: {

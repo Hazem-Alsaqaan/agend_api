@@ -3,6 +3,7 @@ const cors = require("cors")
 const dotenv = require("dotenv")
 const db = require("./db")
 const authRouter = require("./src/routes/auth.route")
+const casesRouter = require("./src/routes/cases.route")
 dotenv.config({
     path:".env"
 })
@@ -18,5 +19,6 @@ app.use(cors({
 
 
 app.use("/api/v1/users", authRouter)
+app.use("/api/v1/cases", casesRouter)
 
 app.listen(PORT, ()=>console.log("server is running...."))
