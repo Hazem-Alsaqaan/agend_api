@@ -4,6 +4,9 @@ const CaseSchema = new mongoose.Schema({
     number: {
         type: String
     },
+    theYear: {
+        type: String
+    },
     plaintiff: {
         type: String
     },

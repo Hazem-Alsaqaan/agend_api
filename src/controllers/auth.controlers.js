@@ -1,6 +1,7 @@
 const userModel = require("../models/user.model")
 const jwt = require("jsonwebtoken")
 const dotenv = require("dotenv")
+const ApiError = require("../utilities/ApiError")
 
 dotenv.config({
     path: ".env"
@@ -30,7 +31,7 @@ const registerUser = async(req, res, next)=>{
             res.status(200).json({user: newUser, token: generateToken})
         }
     }catch(err){
-        console.log(`can't register the user ${err}`)
+        next(new ApiError(`فشل في إنشاء الحساب ${err}`, 500))
     }
 }
 
@@ -58,7 +59,7 @@ const loginUser = async (req, res, next)=>{
             res.status(200).json({user: user, token: generateToken})
         }
     }catch(err){
-        console.log(err)
+        next(new ApiError(`فشل في تسجيل الدخول ${err}`, 500))
     }
 }
 // -----------------------------------------------------------------------------
@@ -72,7 +73,7 @@ const deleteUser = async(req, res, next)=>{
         const user = await userModel.findByIdAndDelete(id)
         res.status(200).json(user)
     }catch(err){
-        console.log(err)
+        next(new ApiError(`فشل في حذف الحساب ${err}`, 500))
     }
 }
 module.exports = {

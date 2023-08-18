@@ -1,4 +1,5 @@
 const caseModel = require("../models/cases.model")
+const ApiError = require("../utilities/ApiError")
 
 
 // -----------------------------------------------------------------------------
@@ -9,15 +10,15 @@ const caseModel = require("../models/cases.model")
 const addNewCase = async(req, res, next)=>{
     const user = req.user
     const {
-        number, plaintiff, defendant, typeCase, toSession, fromSession, decision
+        number, theYear, plaintiff, defendant, typeCase, toSession, fromSession, decision
     } = req.body
     try{
         const newCase = await caseModel.create({
-            number, plaintiff, defendant, typeCase, toSession, fromSession, decision, user
+            number, theYear, plaintiff, defendant, typeCase, toSession, fromSession, decision, user
         })
         res.status(200).json(newCase)
     }catch(err){
-        console.log(err)
+        next(new ApiError(`فشل في إضافة الدعوى ${err}`, 500))
     }
 }
 // -----------------------------------------------------------------------------
@@ -26,23 +27,18 @@ const addNewCase = async(req, res, next)=>{
 //  @route            http://localhost:4000/api/v1/cases/getCases/:date
 // -----------------------------------------------------------------------------
 const getCasesDaySelected = async(req, res, next)=>{
-    const {date} = await req.params
+    const {date} = req.params
     const cases = await caseModel.find().populate({path: "user", select: "_id"} )
     const verifyUser = cases.filter((item)=>req.user._id == item.user._id  )
     try{
         if(verifyUser.length > 0){
             const casesByDate = verifyUser.filter((item)=>item.toSession == date.toString() || item.fromSession == date.toString() )
-            if(casesByDate.length > 0){
-                res.status(200).json(casesByDate)
-            }else{
-                res.status(200).json("لا يوجد قضايا مسجلة في هذا اليوم")
-            }
-            
+            res.status(200).json(casesByDate)
         }else{
             res.status(400).json("ليس مصرح لك")
         }
     }catch(err){
-            console.log(err)
+            next(new ApiError(`فشل في الوصول إلى الدعاوى المقيدة ${err}`, 500))
     }
 }
 // -----------------------------------------------------------------------------
@@ -50,16 +46,17 @@ const getCasesDaySelected = async(req, res, next)=>{
 //  @method           patch
 //  @route            http://localhost:4000/api/v1/cases/updateCase/:id
 // -----------------------------------------------------------------------------
-const updateCase = async(req, res, next)=>{
-    const {id} = req.params.toString()
+const updateCases = async(req, res, next)=>{
+    const {id} = req.params
     const {
-        number, plaintiff, defendant, typeCase, toSession, fromSession, decision
+        number, theYear, plaintiff, defendant, typeCase, toSession, fromSession, decision
     } = req.body
     try{
-        const caseUpdate = await caseModel.findOneAndUpdate(
+        const caseUpdate = await caseModel.findByIdAndUpdate(
             id,
             {
                 number,
+                theYear,
                 plaintiff, 
                 defendant, 
                 typeCase, 
@@ -69,7 +66,7 @@ const updateCase = async(req, res, next)=>{
             },{new: true})
             res.status(200).json(caseUpdate)
     }catch(err){
-        console.log(err)
+        next(new ApiError(`فشل في تعديل البيانات ${err}`, 500))
     }
 }
 // -----------------------------------------------------------------------------
@@ -78,12 +75,12 @@ const updateCase = async(req, res, next)=>{
 //  @route            http://localhost:4000/api/v1/cases/deleteCase/:id
 // -----------------------------------------------------------------------------
 const deleteCase = async(req, res ,next)=>{
-    const {id} = req.params.toString()
+    const {id} = req.params
     try{
         const deleteCase = await caseModel.findByIdAndDelete(id)
         res.status(200).json(deleteCase)
     }catch(err){
-        console.log(err)
+        next(new ApiError(`فشل في حذف الدعوى ${err}`, 500))
     }
 }
 
@@ -93,18 +90,18 @@ const deleteCase = async(req, res ,next)=>{
 //  @route            http://localhost:4000/api/v1/cases/oneCase/:id
 // -----------------------------------------------------------------------------
 const getOneCase = async(req, res, next)=>{
-    const {id} = req.params.toString()
+    const {id} = req.params
     try{
         const OneCase = await caseModel.findById(id)
         res.status(200).json(OneCase)
     }catch(err){
-        console.log(err)
+        next(new ApiError(`فشل في الوصول إلى بيانات الدعوى ${err}`, 500))
     }
 }
 module.exports = {
     addNewCase,
     getCasesDaySelected,
-    updateCase,
+    updateCases,
     deleteCase,
     getOneCase
 }
