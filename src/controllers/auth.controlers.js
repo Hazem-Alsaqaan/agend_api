@@ -16,7 +16,7 @@ const registerUser = async(req, res, next)=>{
     try{
         const user = await userModel.findOne({email})
         if(user){
-            res.status(400).json("user's email should be an unique")
+            res.status(400).json("هذا الحساب مسجل بالفعل")
         }else{
             const newUser = await userModel.create({name, email, picture})
             const generateToken = await jwt.sign(
@@ -45,7 +45,7 @@ const loginUser = async (req, res, next)=>{
     try{
         const user = await userModel.findOne({email})
         if(!user){
-            res.status(400).json("this user did not rejester before")
+            res.status(400).json("هذا المستخدم لم يقوم بانشاء حساب")
         }else{
             const generateToken = jwt.sign(
                 {
