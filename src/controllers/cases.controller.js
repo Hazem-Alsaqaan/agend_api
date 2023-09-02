@@ -28,15 +28,11 @@ const addNewCase = async(req, res, next)=>{
 // -----------------------------------------------------------------------------
 const getCasesDaySelected = async(req, res, next)=>{
     const {date} = req.params
-    const cases = await caseModel.find().populate({path: "user", select: "_id"} )
-    const verifyUser = cases.filter((item)=>req.user._id == item.user._id  )
+    const user = req.user._id
+    const cases = await caseModel.find({user: user}).populate({path: "user", select: "_id"} )
     try{
-        if(verifyUser.length > 0){
-            const casesByDate = verifyUser.filter((item)=>item.toSession == date.toString() || item.fromSession == date.toString() )
-            res.status(200).json(casesByDate)
-        }else{
-            res.status(400).json("ليس مصرح لك")
-        }
+        const casesByDate = cases.filter((item)=>item.toSession == date.toString() || item.fromSession == date.toString() )
+        res.status(200).json(casesByDate)
     }catch(err){
             next(new ApiError(`فشل في الوصول إلى الدعاوى المقيدة ${err}`, 500))
     }
@@ -83,6 +79,21 @@ const deleteCase = async(req, res ,next)=>{
         next(new ApiError(`فشل في حذف الدعوى ${err}`, 500))
     }
 }
+// -----------------------------------------------------------------------------
+//  @des              delete all user cases 
+//  @method           delete
+//  @route            http://localhost:4000/api/v1/cases/deleteUserCases
+// -----------------------------------------------------------------------------
+const deleteUserCases = async(req, res ,next)=>{
+    const user = req.user._id
+    // const findUserCases = await caseModel.find({user: user})
+    try{
+        const deleteAllUserCases = await caseModel.deleteMany({user: user})
+        res.status(200).json(deleteAllUserCases)
+    }catch(err){
+        next(new ApiError(`فشل في حذف الدعوى ${err}`, 500))
+    }
+}
 
 // -----------------------------------------------------------------------------
 //  @des              delete case
@@ -103,5 +114,6 @@ module.exports = {
     getCasesDaySelected,
     updateCases,
     deleteCase,
-    getOneCase
+    getOneCase,
+    deleteUserCases
 }

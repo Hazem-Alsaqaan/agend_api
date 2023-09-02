@@ -68,7 +68,7 @@ const loginUser = async (req, res, next)=>{
 //  @route            http://localhost:4000/api/v1/users/deleteUser/:id
 // -----------------------------------------------------------------------------
 const deleteUser = async(req, res, next)=>{
-    const {id} = req.params.toString()
+    const {id} = req.params
     try{
         const user = await userModel.findByIdAndDelete(id)
         res.status(200).json(user)
