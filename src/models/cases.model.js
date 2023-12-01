@@ -1,36 +1,39 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
-const CaseSchema = new mongoose.Schema({
+const CaseSchema = new mongoose.Schema(
+  {
     number: {
-        type: String
+      type: String,
     },
     theYear: {
-        type: String
+      type: String,
     },
     plaintiff: {
-        type: String
+      type: String,
     },
     defendant: {
-        type: String
+      type: String,
     },
     typeCase: {
-        type: String
-    },
-    toSession: {
-        type: String
-    },
-    fromSession: {
-        type: String
-    },
-    decision: {
-        type: String
+      type: String,
     },
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
-        required: true
-    }
-}, {timestamps: true})
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
+CaseSchema.virtual("sessions", {
+  ref: "sessions",
+  foreignField: "caseId",
+  localField: "_id",
+});
 
-const caseModel = mongoose.model("cases", CaseSchema)
-module.exports = caseModel
+const caseModel = mongoose.model("cases", CaseSchema);
+module.exports = caseModel;
