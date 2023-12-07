@@ -129,6 +129,29 @@ const getOneCase = async (req, res, next) => {
     next(new ApiError(`فشل في الوصول إلى بيانات الدعوى ${err}`, 500));
   }
 };
+
+// -----------------------------------------------------------------------------
+//  @des              search cases
+//  @method           post
+//  @route            http://localhost:4000/api/v1/cases/search
+// -----------------------------------------------------------------------------
+const searchCases = async (req, res, next) => {
+  const userId = req.user._id.toString();
+  const { plaintiff, defendant } = req.body;
+  try {
+    const cases = (
+      await caseModel
+        .find({ $or: [{ plaintiff: plaintiff }, { defendant: defendant }] })
+        .populate({ path: "user", select: "_id" })
+        .populate({ path: "sessions" })
+    ).filter((item) => item.user._id.toString() === userId);
+
+    res.status(200).json(cases);
+  } catch (err) {
+    next(new ApiError(`فشل في الوصول إلى الدعاوى المقيدة ${err}`, 500));
+  }
+};
+
 module.exports = {
   addNewCase,
   getCasesDaySelected,
@@ -136,4 +159,5 @@ module.exports = {
   deleteCase,
   getOneCase,
   deleteUserCases,
+  searchCases,
 };

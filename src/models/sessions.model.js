@@ -4,9 +4,11 @@ const SessionsSchema = new mongoose.Schema(
   {
     sessionDate: {
       type: String,
+      trim: true,
     },
     decision: {
       type: String,
+      trim: true,
     },
     caseId: {
       type: mongoose.Schema.Types.ObjectId,
