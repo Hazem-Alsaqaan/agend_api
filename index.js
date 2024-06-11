@@ -20,9 +20,9 @@ app.use(
   })
 );
 
-app.use("/api/v1/users", authRouter);
-app.use("/api/v1/cases", casesRouter);
-app.use("/api/v1/sessions", sessionsRouter);
+app.use("/api/v2/users", authRouter);
+app.use("/api/v2/cases", casesRouter);
+app.use("/api/v2/sessions", sessionsRouter);
 
 app.all("*", (req, res, next) => {
   next(new ApiError(`this route is not correct ${req.originalUrl}`, 404));
